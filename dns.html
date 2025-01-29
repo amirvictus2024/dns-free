@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Free</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.7/css/flag-icons.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: system-ui;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            gap: 20px;
+            /* تغییر در گرید برای ریسپانسیو بهتر */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background-color: #141414;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 12px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .location-info, .status-badge {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .dns-item {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+        }
+
+        .bubble-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bubble {
+            position: absolute;
+            background: radial-gradient(circle at center, rgba(0,105,148,0.15) 0%, rgba(0,105,148,0) 70%);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(10px, -20px) scale(1.1);
+            }
+            50% {
+                transform: translate(20px, 0) scale(1);
+            }
+            75% {
+                transform: translate(-10px, 20px) scale(0.9);
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap; /* اضافه شده برای ریسپانسیو بهتر */
+            gap: 10px; /* اضافه شده برای فاصله در حالت wrap */
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        .flag {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge.active {
+            background: rgba(0, 255, 0, 0.1);
+            color: #4ade80;
+        }
+
+        .status-badge.inactive {
+            background: rgba(255, 0, 0, 0.1);
+            color: #f87171;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .active .status-indicator {
+            background-color: #4ade80;
+            box-shadow: 0 0 10px #4ade80;
+        }
+
+        .inactive .status-indicator {
+            background-color: #f87171;
+            box-shadow: 0 0 10px #f87171;
+        }
+
+        .dns-group {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 20px;
+        }
+
+        .dns-title {
+            color: #888;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .dns-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .dns-item {
+            background-color: rgba(30, 30, 30, 0.8);
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            word-break: break-all; /* اضافه شده برای شکستن آدرس‌های طولانی */
+            display: flex;
+            flex-wrap: wrap; /* اضافه شده برای ریسپانسیو بهتر */
+            gap: 8px; /* اضافه شده برای فاصله در حالت wrap */
+        }
+
+        .dns-item:hover {
+            background-color: rgba(40, 40, 40, 0.8);
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 35px;
+            height: 35px;
+        }
+
+        .copy-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        .copy-btn:hover::before {
+            transform: scale(1);
+        }
+
+        .copy-btn svg {
+            width: 18px;
+            height: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn.success svg {
+            color: #4ade80;
+            transform: scale(1.2);
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            top: -30px;
+            right: 50%;
+            transform: translateX(50%) translateY(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .copied .tooltip {
+            transform: translateX(50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- کارت اول -->
+        <div class="card">
+            <div class="bubble-bg">
+                <div class="bubble" style="width: 50px; height: 50px; top: 10%; left: 10%;"></div>
+                <div class="bubble" style="width: 30px; height: 30px; top: 30%; left: 50%;"></div>
+                <div class="bubble" style="width: 40px; height: 40px; top: 70%; left: 30%;"></div>
+            </div>
+            <div class="card-header">
+                <div class="location-info">
+                    <div class="flag"><img src="https://flagcdn.com/w20/de.png" alt=""></div>
+                    <span>آلمان</span>
+                </div>
+                <div class="status-badge active">
+                    <div class="status-indicator"></div>
+                    فعال
+                </div>
+            </div>
+            <div class="dns-group">
+                <div class="dns-title">DNS IPv4</div>
+                <div class="dns-list">
+                    <div class="dns-item">
+                        185.149.213.148
+                        <button class="copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg>
+    </button>
+    <span class="tooltip">کپی شد!</span>
+                        <span class="tooltip">کپی شد!</span>
+                    </div>
+                    <div class="dns-item">
+                        185.149.213.148
+                        <button class="copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg>
+    </button>
+    <span class="tooltip">کپی شد!</span>
+                        <span class="tooltip">کپی شد!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dns-group">
+                <div class="dns-title">DNS IPv6</div>
+                <div class="dns-list">
+                    <div class="dns-item">
+                        2a02:c6a0:74cd::1
+                        <button class="copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg>
+    </button>
+    <span class="tooltip">کپی شد!</span>
+                        <span class="tooltip">کپی شد!</span>
+                    </div>
+                    <div class="dns-item">
+                        2a02:c6a0:74cd::0
+                        <button class="copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg>
+    </button>
+    <span class="tooltip">کپی شد!</span>
+                        <span class="tooltip">کپی شد!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- کارت دوم -->
+        <div class="card">
+            <div class="bubble-bg">
+                <div class="bubble" style="width: 60px; height: 60px; top: 20%; left: 20%;"></div>
+                <div class="bubble" style="width: 35px; height: 35px; top: 40%; left: 60%;"></div>
+                <div class="bubble" style="width: 45px; height: 45px; top: 80%; left: 40%;"></div>
+            </div>
+            <div class="card-header">
+                <div class="location-info">
+                    <div class="flag"><img src="https://flagcdn.com/w20/nl.png" alt=""></div>
+                    <span>هلند</span>
+                </div>
+                <div class="status-badge active">
+                    <div class="status-indicator"></div>
+                    فعال
+                </div>
+            </div>
+            <div class="dns-group">
+                <div class="dns-title">DNS IPv4</div>
+                <div class="dns-list">
+                    <div class="dns-item">
+                        145.125.185.206
+                        <button class="copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg>
+    </button>
+    <span class="tooltip">کپی شد!</span>
+                        <span class="tooltip">کپی شد!</span>
+                    </div>
+                    <div class="dns-item">
+                        145.125.185.207
+                        <button class="copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg>
+    </button>
+    <span class="tooltip">کپی شد!</span>
+                        <span class="tooltip">کپی شد!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dns-group">
+                <div class="dns-title">DNS IPv6</div>
+                <div class="dns-list">
+                    <div class="dns-item">
+                        2001:611:3b4d::1
+                        <button class="copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg>
+    </button>
+    <span class="tooltip">کپی شد!</span>
+                        <span class="tooltip">کپی شد!</span>
+                    </div>
+                    <div class="dns-item">
+                        2001:611:3b4d::0
+                        <button class="copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg>
+    </button>
+    <span class="tooltip">کپی شد!</span>
+                        <span class="tooltip">کپی شد!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+                <!-- کارت سوم -->
+                <div class="card">
+                    <div class="bubble-bg">
+                        <div class="bubble" style="width: 60px; height: 60px; top: 20%; left: 20%;"></div>
+                        <div class="bubble" style="width: 35px; height: 35px; top: 40%; left: 60%;"></div>
+                        <div class="bubble" style="width: 45px; height: 45px; top: 80%; left: 40%;"></div>
+                    </div>
+                    <div class="card-header">
+                        <div class="location-info">
+                            <div class="flag"><img src="https://flagcdn.com/w20/se.png" alt=""></div>
+                            <span>سوئد</span>
+                        </div>
+                        <div class="status-badge active">
+                            <div class="status-indicator"></div>
+                            فعال
+                        </div>
+                        <!-- <div class="status-badge inactive">
+                            <div class="status-indicator"></div>
+                            غیرفعال
+                        </div> -->
+                    </div>
+                    <div class="dns-group">
+                        <div class="dns-title">DNS IPv4</div>
+                        <div class="dns-list">
+                            <div class="dns-item">
+                                185.57.168.87
+                                <button class="copy-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                </svg>
+            </button>
+            <span class="tooltip">کپی شد!</span>
+                                <span class="tooltip">کپی شد!</span>
+                            </div>
+                            <div class="dns-item">
+                                185.57.168.88
+                                <button class="copy-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                </svg>
+            </button>
+            <span class="tooltip">کپی شد!</span>
+                                <span class="tooltip">کپی شد!</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dns-group">
+                        <div class="dns-title">DNS IPv6</div>
+                        <div class="dns-list">
+                            <div class="dns-item">
+                                2001:678:d5c:bb26::1
+                                <button class="copy-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                </svg>
+            </button>
+            <span class="tooltip">کپی شد!</span>
+                                <span class="tooltip">کپی شد!</span>
+                            </div>
+                            <div class="dns-item">
+                                2001:678:d5c:bb26::0
+                                <button class="copy-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                </svg>
+            </button>
+            <span class="tooltip">کپی شد!</span>
+                                <span class="tooltip">کپی شد!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </div>
+
+    <script>
+        // ایجاد حباب‌های متحرک به صورت تصادفی
+        document.querySelectorAll('.bubble-bg').forEach(bg => {
+            for(let i = 0; i < 8; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.width = Math.random() * 60 + 20 + 'px';
+                bubble.style.height = bubble.style.width;
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.top = Math.random() * 100 + '%';
+                bubble.style.animationDelay = Math.random() * 8 + 's';
+                bubble.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                bg.appendChild(bubble);
+            }
+        });
+
+        // کپی کردن DNS
+// بروزرسانی کد کپی
+document.querySelectorAll('.dns-item').forEach(item => {
+            const copyBtn = item.querySelector('.copy-btn');
+            
+            copyBtn.addEventListener('click', async () => {
+                const text = item.textContent.trim().replace(/copy|کپی شد!/g, '');
+                
+                try {
+                    await navigator.clipboard.writeText(text);
+                    
+                    // تغییر آیکون به تیک سبز
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    `;
+                    copyBtn.classList.add('success');
+                    item.classList.add('copied');
+                    
+                    // برگشت به حالت اولیه بعد از 2 ثانیه
+                    setTimeout(() => {
+                        copyBtn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                            </svg>
+                        `;
+                        copyBtn.classList.remove('success');
+                        item.classList.remove('copied');
+                    }, 2000);
+                    
+                } catch (err) {
+                    console.error('کپی ناموفق بود:', err);
+                }
+            });
+        });
+
+        // جلوگیری از کلیک راست
+document.addEventListener("contextmenu", (event) => event.preventDefault());
+
+// جلوگیری از استفاده از کلیدهای خاص
+document.addEventListener("keydown", (event) => {
+    if (
+        event.ctrlKey && ["u", "s", "i", "j"].includes(event.key.toLowerCase()) || // Ctrl + U, S, I, J
+        event.key === "F12" || // F12
+        (event.ctrlKey && event.shiftKey && ["c", "j"].includes(event.key.toLowerCase())) // Ctrl + Shift + C, J
+    ) {
+        event.preventDefault();
+    }
+});
+
+// بستن DevTools در صورت باز شدن
+const detectDevTools = () => {
+    const element = new Image();
+    Object.defineProperty(element, 'id', {
+        get: function () {
+            alert("Inspect Element is disabled!");
+            window.location.href = "about:blank"; // ریدایرکت به صفحه خالی
+        }
+    });
+    console.log('%c', element);
+};
+setInterval(detectDevTools, 1000);
+    </script>
+</body>
+</html>
