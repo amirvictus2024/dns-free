@@ -1,232 +1,188 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="fa" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
-    <title>سرورهای DNS</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/@fontsource/vazir/css.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Cards</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
-    <div class="container" id="app"></div>
+    <div id="app" class="container"></div>
+    <div class="toast">کپی شد!</div>
 
     <script>
-        // تابع دانلود کانفیگ
-        function downloadConfig(serverId) {
-            let downloadUrl = '';
-
-            if (serverId === 'wireguard') {
-                // لینک دانلود برای کانفیگ وایرگارد
-                downloadUrl = 'https://udxnpcqectxkjinluloe.supabase.co/storage/v1/object/public/configs/style.css'; // لینک واقعی شما
-            } else {
-                // لینک برای سایر سرورها
-                downloadUrl = 'https://udxnpcqectxkjinluloe.supabase.co/storage/v1/object/public/configs/style.css'; // لینک سرور 2 یا 3
-            }
-
-            // دانلود فایل
-            window.open(downloadUrl, '_blank');
-        }
-
-        // داده‌های سرورها با اطلاعات DNS
-        const servers = [
+        const dnsLocations = [
             {
-                country: "آلمان",
-                flag: "de",
-                status: "active",
-                bubbles: [
-                    { size: 50, top: 10, left: 10 },
-                    { size: 30, top: 30, left: 50 },
-                    { size: 40, top: 70, left: 30 }
-                ],
-                dns: {
-                    ipv4: ["185.149.213.148", "185.149.213.148"],
-                    ipv6: ["2a02:c6a0:74cd::1", "2a02:c6a0:74cd::0"]
-                }
+                id: 'germany',
+                name: 'آلمان',
+                countryCode: 'de',
+                active: true,
+                ipv4: ['185.149.213.148', '185.149.213.149'],
+                ipv6: ['2a02:c6a0:74cd::1', '2a02:c6a0:74cd::0'],
+                ipv6Enabled: true
             },
             {
-                country: "هلند",
-                flag: "nl",
-                status: "active",
-                bubbles: [
-                    { size: 60, top: 20, left: 20 },
-                    { size: 35, top: 40, left: 60 },
-                    { size: 45, top: 80, left: 40 }
-                ],
-                dns: {
-                    ipv4: ["145.125.185.206", "145.125.185.207"],
-                    ipv6: ["2001:611:3b4d::1", "2001:611:3b4d::0"]
-                }
+                id: 'sweden',
+                name: 'سوئد',
+                countryCode: 'se',
+                active: true,
+                ipv4: ['185.57.168.87', '185.57.168.88'],
+                ipv6: ['2001:678:d5c:bb26::1', '2001:678:d5c:bb26::0'],
+                ipv6Enabled: true
+                //  در صورتی ک نمیخای بزن false
             },
             {
-                country: "سوئد",
-                flag: "se",
-                status: "active",
-                bubbles: [
-                    { size: 60, top: 20, left: 20 },
-                    { size: 35, top: 40, left: 60 },
-                    { size: 45, top: 80, left: 40 }
-                ],
-                dns: {
-                    ipv4: ["185.57.168.87", "185.57.168.88"],
-                    ipv6: ["2001:678:d5c:bb26::1", "2001:678:d5c:bb26::0"]
-                }
-            },
-            {
-                country: "الکترو",
-                flag: "ir",
-                status: "active",
-                bubbles: [
-                    { size: 60, top: 20, left: 20 },
-                    { size: 35, top: 40, left: 60 },
-                    { size: 45, top: 80, left: 40 }
-                ],
-                dns: {
-                    ipv4: ["78.157.42.100", "78.157.42.101"],
-                    ipv6: ["-------", "-------"]
-                }
-            },
-            {
-                country: "رادار",
-                flag: "ir",
-                status: "active",
-                bubbles: [
-                    { size: 60, top: 20, left: 20 },
-                    { size: 35, top: 40, left: 60 },
-                    { size: 45, top: 80, left: 40 }
-                ],
-                dns: {
-                    ipv4: ["10.202.10.10", "10.202.10.11"],
-                    ipv6: ["-------", "-------"]
-                }
+                id: 'netherlands',
+                name: 'هلند',
+                countryCode: 'nl',
+                active: true,
+                ipv4: ['145.125.185.206', '145.125.185.207'],
+                ipv6: ['2001:611:3b4d::1', '2001:611:3b4d::0'],
+                ipv6Enabled: true
             }
         ];
 
-        // کامپوننت کپی آیفون
-        const copyIcon = `
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-            </svg>
-        `;
+        const wireguardConfig = {
+            icon: '<img src="wire1.svg" alt="WireGuard">',
+            servers: {
+                WGserver1: "https://krakenfiles.com/view/xXnqxrrEpt/file.html",
+                // WGserver2: "https://example.com/wireguard/usa.conf",
+                // WGserver3: "https://example.com/wireguard/netherlands.conf"
+            }
+        };
 
-        // کارت وایرگارد
-        const generateWireguardCard = () => `
-            <div class="card wireguard-card">
-                <h3>کانفیگ وایرگارد</h3>
-                
-                <!-- انتخاب سرور -->
-                <div class="server-select">
-                    <label for="server-wireguard">انتخاب سرور:</label>
-                    <select id="server-wireguard">
-                        <option value="server1">سرور 1</option>
-                        <option value="server2">سرور 2</option>
-                        <option value="server3">سرور 3</option>
+        function getFlagUrl(countryCode) {
+    // تغییر سایز از 48x36 به 96x72 برای کیفیت بهتر
+    return `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`;
+}
+
+        function createDNSCard(location) {
+            const flagHtml = `
+    <img 
+        src="${getFlagUrl(location.countryCode)}"
+        srcset="${getFlagUrl(location.countryCode)} 1x,
+                https://flagcdn.com/w320/${location.countryCode}.png 2x"
+        alt="${location.name} flag"
+    >
+`;
+
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="location">
+                            <div class="location-icon">${flagHtml}</div>
+                            <span>${location.name}</span>
+                        </div>
+                        <div class="status ${location.active ? 'active' : 'inactive'}">
+                            ${location.active ? 'فعال' : 'غیرفعال'}
+                        </div>
+                    </div>
+                    <div class="dns-section">
+                        <div class="section-title">DNS نسل ۴</div>
+                        ${location.ipv4.map(ip => createDNSEntry(ip, true)).join('')}
+                    </div>
+                    <div class="dns-section">
+                        <div class="section-title">DNS نسل ۶</div>
+                        ${location.ipv6.map(ip => createDNSEntry(ip, location.ipv6Enabled)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function createDNSEntry(ip, enabled) {
+            return `
+                <div class="dns-entry ${!enabled ? 'disabled' : ''}" ${enabled ? `onclick="copyToClipboard('${ip}', this)"` : ''}>
+                    <span>${ip}</span>
+                    <button class="copy-button" ${!enabled ? 'disabled' : ''}>
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function createWireGuardCard() {
+            return `
+                <div class="card wireguard-card">
+                    <div class="card-header">
+                        <div class="location">
+                            <div class="location-icon">${wireguardConfig.icon}</div>
+                            <span>کانفیگ وایرگارد</span>
+                        </div>
+                    </div>
+                    <select id="serverSelect">
+                        <option value="">انتخاب سرور</option>
+                        ${Object.entries(wireguardConfig.servers).map(([server, url]) =>
+                `<option value="${server}">${server}</option>`
+            ).join('')}
                     </select>
+                    <button class="download-btn" onclick="downloadConfig()">
+                        <i class="fas fa-download"></i>
+                        <span>دانلود کانفیگ</span>
+                    </button>
                 </div>
+            `;
+        }
 
-                <!-- دکمه دانلود -->
-                <button class="download-btn" onclick="downloadConfig('wireguard')">دانلود کانفیگ</button>
-            </div>
-        `;
+        async function copyToClipboard(text, element) {
+            if (element.classList.contains('disabled')) return;
 
-        // کارت سرورهای دیگر
-        const generateCard = (server) => `
-            <div class="card">
-                <div class="bubble-bg">
-                    ${server.bubbles.map(b => `
-                        <div class="bubble" style="
-                            width: ${b.size}px;
-                            height: ${b.size}px;
-                            top: ${b.top}%;
-                            left: ${b.left}%;
-                        "></div>
-                    `).join('')}
-                </div>
-                <div class="card-header">
-                    <div class="location-info">
-                        <div class="flag">
-                            <img src="https://flagcdn.com/w20/${server.flag}.png" alt="${server.country}">
-                        </div>
-                        <span>${server.country}</span>
-                    </div>
-                    <div class="status-info">
-                        <div class="status-badge ${server.status}">
-                            <div class="status-indicator"></div>
-                            ${server.status === 'active' ? 'فعال' : 'غیرفعال'}
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- بخش DNS IPv4 و IPv6 -->
-                <div class="dns-group">
-                    <div class="dns-title">DNS IPv4</div>
-                    <div class="dns-list">
-                        ${server.dns.ipv4.map(ip => `
-                            <div class="dns-item">
-                                <span class="dns-address">${ip}</span>
-                                <button class="copy-btn">${copyIcon}</button>
-                                <span class="tooltip">کپی شد!</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                <div class="dns-group">
-                    <div class="dns-title">DNS IPv6</div>
-                    <div class="dns-list">
-                        ${server.dns.ipv6.map(ip => `
-                            <div class="dns-item">
-                                <span class="dns-address">${ip}</span>
-                                <button class="copy-btn">${copyIcon}</button>
-                                <span class="tooltip">کپی شد!</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-        // رندر کارت‌ها
-        document.getElementById('app').innerHTML = `
-            <div class="container">
-                ${generateWireguardCard()}
-                ${servers.map(server => generateCard(server)).join('')}
-            </div>
-        `;
+            try {
+                await navigator.clipboard.writeText(text);
+                const button = element.querySelector('.copy-button i');
+                button.classList.replace('fa-copy', 'fa-check');
+                button.style.color = '#4CAF50';
 
-        // کپی کردن آدرس‌ها
-        document.querySelectorAll('.copy-btn').forEach(btn => {
-            btn.addEventListener('click', async function () {
-                const dnsAddress = this.previousElementSibling.textContent;
-                const tooltip = this.nextElementSibling;
+                showToast();
 
-                try {
-                    await navigator.clipboard.writeText(dnsAddress);
+                setTimeout(() => {
+                    button.classList.replace('fa-check', 'fa-copy');
+                    button.style.color = '';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        }
 
-                    // نمایش تایید کپی
-                    tooltip.style.opacity = '1';
-                    setTimeout(() => {
-                        tooltip.style.opacity = '0';
-                    }, 2000);
+        function showToast() {
+            const toast = document.querySelector('.toast');
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2000);
+        }
 
-                    // تغییر آیکون به تیک سبز
-                    this.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    `;
-                    this.classList.add('success');
-                    setTimeout(() => {
-                        this.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-                            </svg>
-                        `;
-                        this.classList.remove('success');
-                    }, 3000);
-                } catch (error) {
-                    console.error("خطا در کپی کردن:", error);
-                }
-            });
-        });
+        function downloadConfig() {
+            const select = document.getElementById('serverSelect');
+            const selectedServer = select.value;
+
+            if (!selectedServer) {
+                alert('لطفا یک سرور را انتخاب کنید');
+                return;
+            }
+
+            const configUrl = wireguardConfig.servers[selectedServer];
+            const link = document.createElement('a');
+            link.href = configUrl;
+            link.download = `wireguard-${selectedServer}.conf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function renderApp() {
+            const app = document.getElementById('app');
+            const content = [...dnsLocations.map(createDNSCard),
+            createWireGuardCard()
+            ].join('');
+
+            app.innerHTML = content;
+        }
+
+        // Initialize
+        renderApp();
     </script>
 </body>
 
