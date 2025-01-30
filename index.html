@@ -106,7 +106,34 @@
                 ipv4: ['', ''],
                 ipv6: ['', ''],
                 ipv6Enabled: true
-        }
+            },
+            {
+                id: 'France',
+                name: 'فرانسه',
+                countryCode: 'fr',
+                active: true,
+                ipv4: ['185.231.58.57', '163.114.32.72'],
+                ipv6: ['2a01:cb1a:9932:7583::1', '2a01:cb1a:7ee9:4a01::1'],
+                ipv6Enabled: true
+            },
+            {
+                id: 'Cyprus',
+                name: 'قبرس',
+                countryCode: 'cy',
+                active: true,
+                ipv4: ['213.7.55.215', '62.228.46.174'],
+                ipv6: ['2a00:1358:fe01:dc30::1', '2a00:1358:ab54:2d96::1'],
+                ipv6Enabled: true
+            },
+            {
+                id: 'Turkey',
+                name: 'ترکیه',
+                countryCode: 'tr',
+                active: true,
+                ipv4: ['95.0.140.35', '85.96.237.161'],
+                ipv6: ['2a01:358:242c::1', '2a01:358:0e35::0'],
+                ipv6Enabled: true
+            }
         ];
 
         const wireguardConfig = {
@@ -236,14 +263,24 @@
             document.body.removeChild(link);
         }
 
+        // function renderApp() {
+        //     const app = document.getElementById('app');
+        //     const content = [...dnsLocations.map(createDNSCard),
+        //     createWireGuardCard()
+        //     ].join('');
+
+        //     app.innerHTML = content;
+        // }
         function renderApp() {
             const app = document.getElementById('app');
-            const content = [...dnsLocations.map(createDNSCard),
-            createWireGuardCard()
+            const content = [
+                createWireGuardCard(), // کارت WireGuard را در ابتدا قرار دهید
+                ...dnsLocations.map(createDNSCard) // سپس کارت‌های DNS را به ترتیب اضافه کنید
             ].join('');
 
             app.innerHTML = content;
         }
+
 
         document.addEventListener("contextmenu", (event) => event.preventDefault()); // غیرفعال کردن راست‌کلیک
 
