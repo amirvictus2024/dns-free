@@ -101,9 +101,9 @@
         };
 
         function getFlagUrl(countryCode) {
-    // تغییر سایز از 48x36 به 96x72 برای کیفیت بهتر
-    return `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`;
-}
+            // تغییر سایز از 48x36 به 96x72 برای کیفیت بهتر
+            return `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`;
+        }
 
         function createDNSCard(location) {
             const flagHtml = `
@@ -226,6 +226,26 @@
 
             app.innerHTML = content;
         }
+
+        document.addEventListener("contextmenu", (event) => event.preventDefault()); // غیرفعال کردن راست‌کلیک
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "F12" || (event.ctrlKey && event.shiftKey && event.key === "I") ||
+                (event.ctrlKey && event.shiftKey && event.key === "J") ||
+                (event.ctrlKey && event.key === "U")) {
+                event.preventDefault();
+            }
+        });
+
+        (function blockDevTools() {
+            const element = new Image();
+            Object.defineProperty(element, 'id', {
+                get: function () {
+                    window.location.reload(); // ریلود صفحه هنگام باز کردن DevTools
+                }
+            });
+            console.log('%c', element);
+        })();
 
         // Initialize
         renderApp();
