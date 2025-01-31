@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دی ان اس رایگان</title>
+    <title>DNS Cards</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <link rel="icon" href="icon.png" type="image/png">
@@ -399,11 +399,122 @@
             });
             console.log('%c', element);
         })();
+        // تابع جدید برای صفحه‌بندی
+        function createPagination(locations, cardsPerPage = 6) {
+            const totalLocations = locations.length;
+            const totalPages = Math.ceil(totalLocations / cardsPerPage);
 
-        // شروع برنامه
-        renderApp();
+            return {
+                getTotalPages: () => totalPages,
+                getPageLocations: (pageNumber) => {
+                    const startIndex = (pageNumber - 1) * cardsPerPage;
+                    const endIndex = startIndex + cardsPerPage;
+                    return locations.slice(startIndex, endIndex);
+                }
+            };
+        }
+
+        // متغیر برای نگهداری صفحه فعلی
+        let currentPage = 1;
+
+        // تابع رندر صفحه‌بندی
+        function renderPaginatedApp() {
+            const app = document.getElementById('app');
+            const pagination = createPagination([
+                { type: 'ipchecker' },
+                { type: 'wireguard' },
+                ...dnsLocations
+            ]);
+
+            const pageLocations = pagination.getPageLocations(currentPage);
+
+            const content = pageLocations.map(location => {
+                if (location.type === 'ipchecker') return createIPCheckerCard();
+                if (location.type === 'wireguard') return createWireGuardCard();
+                return createDNSCard(location);
+            }).join('');
+
+            // اضافه کردن کنترل صفحه‌بندی
+            const paginationControls = `
+            <div class="pagination-controls">
+                <button onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i> قبلی
+                </button>
+                <span>صفحه ${currentPage} از ${pagination.getTotalPages()}</span>
+                <button onclick="changePage(1)" ${currentPage === pagination.getTotalPages() ? 'disabled' : ''}>
+                    بعدی <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+        `;
+
+            // رندر محتوا
+            app.innerHTML = content + paginationControls;
+        }
+
+        // تابع تغییر صفحه
+        function changePage(direction) {
+            const pagination = createPagination([
+                ...dnsLocations.filter(loc => loc.active),
+                ...dnsLocations.filter(loc => !loc.active)
+            ]);
+
+            // محاسبه صفحه جدید
+            currentPage = Math.max(1, Math.min(
+                currentPage + direction,
+                pagination.getTotalPages()
+            ));
+
+            // رندر مجدد
+            renderPaginatedApp();
+        }
+
+        // اضافه کردن استایل‌های صفحه‌بندی
+        const paginationStyles = `
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 20px;
+        direction: rtl;
+    }
+
+    .pagination-controls button {
+        background: rgba(30, 30, 30, 0.6);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .pagination-controls button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .pagination-controls button:not(:disabled):hover {
+        background: rgba(50, 50, 50, 0.7);
+    }
+
+    .pagination-controls span {
+        color: white;
+        font-weight: bold;
+    }
+    `;
+
+        // اضافه کردن استایل‌های صفحه‌بندی
+        const paginationStyleSheet = document.createElement("style");
+        paginationStyleSheet.textContent = paginationStyles;
+        document.head.appendChild(paginationStyleSheet);
+
+        // تغییر renderApp به renderPaginatedApp
+        renderPaginatedApp();
         // ... تمام کدهای قبلی ...
-
 
         // تابع جدید برای ساخت کارت بررسی IP
         function createIPCheckerCard() {
