@@ -14,7 +14,10 @@
     <div id="app" class="container"></div>
     <div class="toast">کپی شد!</div>
 
+    <script src="https://fastly.jsdelivr.net/npm/disable-devtool/disable-devtool.min.js" disable-devtool-auto
+        disable-menu="true" url="https://cia.gov"></script>
     <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
         // برای پرچم های سفارشی 
         // flagSize: { width: 96, height: 72 }
         // customFlag: '/images/custom-sweden.png'
@@ -436,6 +439,16 @@
                 id: 'Armania',
                 name: 'ارمنستان',
                 countryCode: 'am',
+                active: false,
+                ipv4: ['', ''],
+                ipv6: ['', ''],
+                ipv4Enabled: false,
+                ipv6Enabled: false,
+            },
+            {
+                id: 'spain',
+                name: 'اسپانیا',
+                countryCode: 'es',
                 active: false,
                 ipv4: ['', ''],
                 ipv6: ['', ''],
