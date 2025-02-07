@@ -366,3 +366,130 @@ body {
 .pagination button:disabled {
     background: #555;
 }
+
+/* =============================== */
+/* استایل‌های اختصاصی برای کارت IP Checker و سایر المان‌ها */
+.ip-checker-card {
+    margin-bottom: 20px;
+    background: rgba(20, 20, 20, 0.4);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    overflow: hidden;
+}
+
+.ip-input-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.ip-input {
+    flex: 1;
+    height: 45px;
+    padding: 0 15px;
+    background: rgba(30, 30, 30, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 14px;
+    direction: ltr;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.check-btn {
+    height: 45px;
+    padding: 0 25px;
+    background: linear-gradient(45deg, #0D47A1, #1565C0);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    transition: all 0.3s ease;
+}
+
+.check-btn:hover {
+    background: linear-gradient(45deg, #1565C0, #1976D2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+}
+
+.ip-result {
+    background: rgba(30, 30, 30, 0.6);
+    border-radius: 12px;
+    padding: 15px;
+    color: white;
+    text-align: left;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.ip-info {
+    border-radius: 8px;
+    padding: 15px;
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+    direction: rtl;
+}
+
+.info-label {
+    font-weight: 500;
+    min-width: 120px;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+    text-align: right;
+    flex: 1;
+}
+
+.info-value {
+    color: rgba(255, 255, 255, 0.8);
+    flex: 2;
+    text-align: left;
+    word-break: break-word;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+}
+
+.error-message {
+    color: #ff4d4d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(220, 53, 69, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 500;
+}
