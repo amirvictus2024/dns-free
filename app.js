@@ -440,7 +440,7 @@ const App = (() => {
         }
     };
 
-    // ساخت یک ورودی DNS (بدون استفاده از رویداد inline)
+    // ساخت یک ورودی DNS
     const createDNSEntry = (ip, enabled) => {
         return `
       <div class="dns-entry ${!enabled ? 'disabled' : ''}" data-ip="${ip}" data-enabled="${enabled}">
@@ -477,7 +477,7 @@ const App = (() => {
     `;
     };
 
-    // ساخت کارت وایرگارد (بخش دانلود لینک حذف شده)
+    // ساخت کارت وایرگارد (دکمه دانلود مجدداً اضافه شده)
     const createWireGuardCard = () => {
         const serverOptions = Object.entries(wireguardConfig.servers)
             .map(([server, url]) => `<option value="${server}">${server}</option>`)
@@ -494,6 +494,10 @@ const App = (() => {
           <option value="">انتخاب سرور</option>
           ${serverOptions}
         </select>
+        <a id="downloadLink" class="download-btn" href="#" download>
+          <i class="fas fa-download"></i>
+          <span>دانلود کانفیگ</span>
+        </a>
       </div>
     `;
     };
@@ -564,7 +568,6 @@ const App = (() => {
     };
 
     const generateAllCards = () => {
-        // آرایه شامل کارت‌های بررسی IP، وایرگارد و سپس کارت‌های DNS (فعال و غیر فعال)
         return [
             { type: 'ipchecker' },
             { type: 'wireguard' },
@@ -573,7 +576,7 @@ const App = (() => {
         ];
     };
 
-    // تابع رندر کردن برنامه به همراه صفحه‌بندی
+    // رندر کردن برنامه به همراه صفحه‌بندی
     const renderApp = () => {
         const allCards = generateAllCards();
         const pagination = createPaginationData(allCards);
@@ -589,25 +592,24 @@ const App = (() => {
             }
         }).join('');
 
-        const paginationHTML = `
-      <div class="pagination-controls">
-        <button class="nav-button" id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>
-          <i class="fas fa-chevron-right"></i>
-        </button>
-        <div class="pagination-numbers">
-          ${generatePageNumbersHTML(currentPage, pagination.totalPages)}
-        </div>
-        <button class="nav-button" id="nextPage" ${currentPage === pagination.totalPages ? 'disabled' : ''}>
-          <i class="fas fa-chevron-left"></i>
-        </button>
-      </div>
-    `;
-
-        appContainer.innerHTML = contentHTML + paginationHTML;
+        // قرار دادن کارت‌ها درون یک المنت جداگانه با کلاس cards-container
+        appContainer.innerHTML =
+            `<div class="cards-container">${contentHTML}</div>` +
+            `<div class="pagination-controls">
+         <button class="nav-button" id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>
+           <i class="fas fa-chevron-right"></i>
+         </button>
+         <div class="pagination-numbers">
+           ${generatePageNumbersHTML(currentPage, pagination.totalPages)}
+         </div>
+         <button class="nav-button" id="nextPage" ${currentPage === pagination.totalPages ? 'disabled' : ''}>
+           <i class="fas fa-chevron-left"></i>
+         </button>
+       </div>`;
         attachEventListeners();
     };
 
-    // نمایش پیام موفقیت (Toast)
+    // نمایش پیام Toast
     const showToast = () => {
         toastElement.style.display = 'block';
         setTimeout(() => {
@@ -641,7 +643,6 @@ const App = (() => {
         const ipResult = document.getElementById('ipResult');
         if (!ipInput) return;
         const ip = ipInput.value.trim();
-        // اعتبارسنجی ساده IPv4 (برای پشتیبانی از IPv6 می‌توانید الگوی جامع‌تری استفاده کنید)
         const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
         if (!ipRegex.test(ip)) {
             ipResult.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> لطفا یک IP معتبر وارد کنید</div>`;
@@ -670,9 +671,8 @@ const App = (() => {
         }
     };
 
-    // افزودن event listenerها به المان‌های داینامیک
+    // افزودن رویدادهای مورد نیاز به المان‌های داینامیک
     const attachEventListeners = () => {
-        // رویداد کپی برای المان‌های DNS
         appContainer.querySelectorAll('.dns-entry').forEach(entry => {
             if (entry.dataset.enabled === "true") {
                 entry.addEventListener('click', () => {
@@ -682,13 +682,28 @@ const App = (() => {
             }
         });
 
-        // رویداد بررسی IP
         const checkBtn = document.getElementById('checkBtn');
         if (checkBtn) {
             checkBtn.addEventListener('click', checkIPLocation);
         }
 
-        // رویدادهای صفحه‌بندی
+        // رویداد تغییر در انتخاب سرور وایرگارد برای به‌روزرسانی لینک دانلود
+        const serverSelect = document.getElementById('serverSelect');
+        const downloadLink = document.getElementById('downloadLink');
+        if (serverSelect && downloadLink) {
+            serverSelect.addEventListener('change', () => {
+                const selectedServer = serverSelect.value;
+                if (selectedServer) {
+                    const configUrl = wireguardConfig.servers[selectedServer];
+                    downloadLink.href = configUrl;
+                    downloadLink.setAttribute('download', `wireguard-${selectedServer}.conf`);
+                } else {
+                    downloadLink.href = '#';
+                    downloadLink.removeAttribute('download');
+                }
+            });
+        }
+
         const prevBtn = document.getElementById('prevPage');
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
@@ -711,7 +726,6 @@ const App = (() => {
             });
         }
 
-        // رویداد کلیک بر روی شماره‌های صفحه
         appContainer.querySelectorAll('.page-number').forEach(btn => {
             btn.addEventListener('click', () => {
                 const page = parseInt(btn.getAttribute('data-page'), 10);
@@ -724,11 +738,9 @@ const App = (() => {
         });
     };
 
-    // تابع اولیه برای راه‌اندازی برنامه
+    // تابع اولیه راه‌اندازی برنامه
     const init = () => {
-        // جلوگیری از منوی راست‌کلیک
         document.addEventListener('contextmenu', e => e.preventDefault());
-        // جلوگیری از کلیدهای میانبر مربوط به DevTools
         document.addEventListener('keydown', (e) => {
             if (e.key === "F12" ||
                 (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
@@ -742,5 +754,4 @@ const App = (() => {
     return { init };
 })();
 
-// راه‌اندازی برنامه پس از بارگذاری کامل صفحه
 document.addEventListener('DOMContentLoaded', App.init);
