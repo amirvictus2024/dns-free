@@ -276,6 +276,7 @@ body {
         transform: translateY(100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -318,103 +319,43 @@ body {
     transform: translateY(-2px);
 }
 
-/* ----------------------- */
-/* استایل‌های صفحه‌بندی (بهبود یافته) */
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-  direction: rtl;
-}
-
-/* استایل دکمه‌های ناوبری (قبلی/بعدی) */
-.nav-button {
-  width: 40px;
-  height: 40px;
-  background: rgba(30, 30, 30, 0.6);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-  /* حذف استایل پیش‌فرض دکمه */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  outline: none;
-}
-
-.nav-button:focus {
-  outline: none;
-}
-
-.nav-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.nav-button:not(:disabled):hover {
-  background: rgba(50, 50, 50, 0.7);
-  transform: translateY(-2px);
-}
-
-/* استایل ناحیه شماره‌گذاری صفحات */
 .pagination-numbers {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
-/* استایل دکمه شماره صفحه */
 .page-number {
-  min-width: 35px;
-  height: 35px;
-  padding: 0;
-  background: rgba(30, 30, 30, 0.6);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  /* حذف استایل پیش‌فرض دکمه */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  outline: none;
+    min-width: 35px;
+    height: 35px;
+    padding: 0;
+    background: rgba(30, 30, 30, 0.6);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
 }
 
-.page-number:focus {
-  outline: none;
-}
-
-/* دکمه فعال (انتخاب‌شده) */
 .page-number.active {
-  background: linear-gradient(45deg, #0D47A1, #1565C0);
-  border: none;
-  transform: scale(1.1);
+    background: linear-gradient(45deg, #0D47A1, #1565C0);
+    border: none;
+    transform: scale(1.1);
 }
 
-/* استایل در حالت hover برای دکمه‌های شماره صفحه */
 .page-number:not(.active):hover {
-  background: rgba(50, 50, 50, 0.7);
-  transform: translateY(-2px);
+    background: rgba(50, 50, 50, 0.7);
+    transform: translateY(-2px);
 }
 
-/* استایل برای قسمت نقاط وسط ( ... ) */
 .page-dots {
-  color: white;
-  font-weight: bold;
-  padding: 0 2px;
+    color: white;
+    font-weight: bold;
+    padding: 0 2px;
 }
 
 /* ----------------------- */
