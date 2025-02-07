@@ -273,6 +273,80 @@ body {
     }
 }
 
+/* استایل‌های صفحه‌بندی (بازگشت به نسخه قبلی) */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    direction: rtl;
+}
+
+.nav-button {
+    width: 40px;
+    height: 40px;
+    background: rgba(30, 30, 30, 0.6);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.nav-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.nav-button:not(:disabled):hover {
+    background: rgba(50, 50, 50, 0.7);
+    transform: translateY(-2px);
+}
+
+.pagination-numbers {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.page-number {
+    min-width: 35px;
+    height: 35px;
+    padding: 0;
+    background: rgba(30, 30, 30, 0.6);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.page-number.active {
+    background: linear-gradient(45deg, #0D47A1, #1565C0);
+    border: none;
+    transform: scale(1.1);
+}
+
+.page-number:not(.active):hover {
+    background: rgba(50, 50, 50, 0.7);
+    transform: translateY(-2px);
+}
+
+.page-dots {
+    color: white;
+    font-weight: bold;
+    padding: 0 2px;
+}
+
 .pagination {
     display: flex;
     justify-content: center;
